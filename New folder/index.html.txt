@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8" />
+<title>بازی جای خالی کودکانه فانتزی</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Baloo+2:wght@700&display=swap');
+  body {
+    font-family: 'Baloo 2', cursive;
+    background: #a0e7e5;
+    margin: 0;
+    padding: 30px;
+    text-align: center;
+    color: #333;
+    overflow-x: hidden;
+  }
+  h1 {
+    color: #ff4f96;
+    font-size: 36px;
+    margin-bottom: 20px;
+    text-shadow: 3px 3px #fff;
+  }
+  .word {
+    font-size: 28px;
+    margin: 10px;
+    display: inline-block;
+    padding: 10px 15px;
+    border-radius: 15px;
+    background: rgba(255, 255, 255, 0.7);
+    box-shadow: 2px 2px 12px rgba(0,0,0,0.2);
+    position: relative;
+    transition: transform 0.3s, background 0.3s;
+  }
+  .option-btn {
+    background: linear-gradient(90deg, #ffb6c1, #ff69b4);
+    border: none;
+    margin: 5px;
+    padding: 12px 18px;
+    border-radius: 12px;
+    cursor: pointer;
+    font-size: 22px;
+    color: white;
+    box-shadow: 2px 2px 8px rgba(0,0,0,0.2);
+    transition: transform 0.2s;
+  }
+  .option-btn:hover {
+    background: linear-gradient(90deg, #ff69b4, #ff1493);
+    transform: scale(1.1);
+  }
+  canvas {
+    position: fixed;
+    top: 0;
+    left: 0;
+    pointer-events: none;
+    z-index: 1000;
+  }
+</style>
+</head>
+<body>
+<h1>🎈 بازی جای خالی کودکانه فانتزی 🎈</h1>
+<div id="game"></div>
+<div id="letters" style="margin-top:20px;"></div>
+<canvas id="confettiCanvas"></canvas>
+
+<script>
+  // موزیک پس‌زمینه
+  const bgMusic = new Audio('06.memories.mp3'); // موزیک را داخل همان پوشه قرار بده
+  bgMusic.loop = true;
+  document.addEventListener('click', () => {
+    if(bgMusic.paused){ bgMusic.play(); }
+  }, { once: true });
+
+  // کلمات بازی
+  const words = [
+    {full:"چراغانی", blank:"چر_غانی", missing:"ا", solved:false},
+    {full:"استراحت", blank:"استراح_", missing:"ت", solved:false},
+    {full:"خطرناک", blank:"خطرنا_", missing:"ک", solved:false},
+    {full:"نصیحت", blank:"نصیح_", missing:"ت", solved:false},
+    {full:"صاحب", blank:"صاح_", missing:"ب", solved:false},
+    {full:"بی حوصله", blank:"بی حوصل_", missing:"ه", solved:false},
+    {full:"خوردن", blank:"خور_ن", missing:"د", solved:false},
+    {full:"منتظر", blank:"منتظ_", missing:"ر", solved:false},
+    {full:"مثلا", blank:"مثل_", missing:"ا", solved:false},
+    {full:"سرود", blank:"سرو_", missing:"د", solved:false},
+    {full:"مواظبت", blank:"مواظب_", missing:"ت", solved:false},
+    {full:"وانگهی", blank:"وانگه_", missing:"ی", solved:false}
+  ];
+
+  // حروف برای انتخاب
+  let letters = words.flatMap(w => Array(w.missing.length).fill(w.missing));
+  letters.sort(() => Math.random() - 0.5);
+
+  // نمایش کلمات
+  const container = document.getElementById("game");
+  words.forEach((w,index) => {
+    const span = document.createElement('span');
+    span.className = 'word';
+    span.id = 'word'+index;
+    span.innerText = w.blank;
+    container.appendChild(span);
+  });
+
+  // نمایش حروف
+  const lettersDiv = document.getElementById('letters');
+  function renderLetters(
